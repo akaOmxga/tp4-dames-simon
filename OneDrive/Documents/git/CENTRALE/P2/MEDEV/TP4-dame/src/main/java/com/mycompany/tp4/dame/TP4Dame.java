@@ -11,6 +11,7 @@ package com.mycompany.tp4.dame;
 public class TP4Dame {
 
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        JeuDame partie = new JeuDame();
+        partie.demarrerPartie();
     }
 }

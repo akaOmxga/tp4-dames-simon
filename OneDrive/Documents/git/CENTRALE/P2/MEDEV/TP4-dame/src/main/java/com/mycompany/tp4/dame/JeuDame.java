@@ -17,7 +17,7 @@ class JeuDame {
     public void demarrerPartie() {
         System.out.println("La Partie va commencer, bonne chance à tous, que le meilleur gagne !");
         System.out.println("Entrez votre coup de la façon suivante : 2 3 3 4 pour déplacer de [2,3] à [3,4]):");
-        
+        System.out.println("NB les cases sont numérotées de 1 à 8");
         plateau.afficherPlateau();
 
         while (!jeuFini()) {
@@ -52,12 +52,32 @@ class JeuDame {
     }
 
     private void jouerTour(char joueur, String coup){
-         // TODO
+        String[] parts = coup.split(" ");
+        int x1 = Integer.parseInt(parts[0]);
+        int y1 = Integer.parseInt(parts[1]);
+        int x2 = Integer.parseInt(parts[2]);
+        int y2 = Integer.parseInt(parts[3]);
+        char[][] pions = plateau.getPions();
+        pions[x1-1][y1-1] = '.';
+        pions[x2-1][y2-1] = joueur;
     }
 
     private boolean validerCoup(char joueur, String coup) {
-       // TODO
-       return false;
+        String e = "\\d+ \\d+ \\d+ \\d+";
+        if (!coup.matches(e)){return false;} // le coup donné ne matche pas l'expression régulière d'un coup
+        String[] parts = coup.split(" ");
+        int x1 = Integer.parseInt(parts[0]);
+        int y1 = Integer.parseInt(parts[1]);
+        int x2 = Integer.parseInt(parts[2]);
+        int y2 = Integer.parseInt(parts[3]);
+        char[][] pions = plateau.getPions();
+        if (x1-1<0 || x1-1 > 7 || x2-1<0 || x2-1 > 7 || y1-1<0 || y1-1 > 7 || y2-1<0 || y2-1 > 7)
+            {return false;} // les cases fournies sont hors du plateau
+        if (pions[x1-1][y1-1] != joueur)
+            {return false;} // la case initiale n'est pas celle d'un pion du joueur joueur
+        if (pions[x2-1][y2-1] == joueur)
+            {return false;} // la case finale est celle d'un pion du joueur joueur
+        return true;
     }
     
     public Boolean jeuFini() {
