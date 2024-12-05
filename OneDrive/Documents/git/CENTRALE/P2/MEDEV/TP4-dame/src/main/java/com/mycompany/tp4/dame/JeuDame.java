@@ -9,10 +9,18 @@ package com.mycompany.tp4.dame;
  * @author victor
  */
 import java.util.Scanner;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Scanner;
 
 class JeuDame {
     private Plateau plateau = new Plateau(); // Plateau de 8x8
     private Scanner scanner = new Scanner(System.in);
+    private String saveFile = "save.txt";
 
     public void demarrerPartie() {
         System.out.println("La Partie va commencer, bonne chance à tous, que le meilleur gagne !");
@@ -30,7 +38,8 @@ class JeuDame {
             };
             // Le coup est valide, actualisation du plateau en fonction du coup
             jouerTour('B',coupB);
-            
+            // Sauvegarder coup :
+            sauvegarderCoup('B',coupB,this.saveFile);
             // Affichage du plateau et fin du tour
             plateau.afficherPlateau();
             
@@ -43,9 +52,11 @@ class JeuDame {
             };
             // Le coup est valide, actualisation du plateau en fonction du coup
             jouerTour('N',coupN); 
-            
+            // Sauvegarder coup :
+            sauvegarderCoup('N',coupN,this.saveFile);
             // Affichage du plateau et fin du tour
             plateau.afficherPlateau();
+            
         }
 
         System.out.println("Fin de la partie !");
@@ -102,6 +113,99 @@ class JeuDame {
 
         // Si l'un des deux types de pions n'existe plus, le jeu est terminé
         return !noirPresent || !blancPresent;
+    }
+    
+    public void viderFichierSauvegarde(String filePath) {
+        try (FileWriter writer = new FileWriter(filePath, false)) {
+            writer.write(""); 
+        } catch (IOException e) {
+            System.out.println("Erreur lors de la suppression du contenu du fichier : " + e.getMessage());
+        }
+    }
+
+    public void sauvegarderCoup(char joueur, String coup, String saveFile) {
+        // Initialisation du fichier save.txt :
+        viderFichierSauvegarde(saveFile);
+        // Les parties sont sauvegardées coup par coup afin de pouvoir accéder à l'enregistrement entier d'une partie
+        // sous le format suivant : joueur + position du pion avant coup + position après coup
+        String[] parts = coup.split(" ");
+        int x1 = Integer.parseInt(parts[0]);
+        int y1 = Integer.parseInt(parts[1]);
+        int x2 = Integer.parseInt(parts[2]);
+        int y2 = Integer.parseInt(parts[3]);
+        File f = new File(saveFile);
+        try(FileWriter writer = new FileWriter(f,true)){
+            // Ecrire le coup :
+            writer.write(joueur + " " + x1 + " " + y1 + " " + x2 + " " + y2 + "\n");
+        }
+        catch(IOException e){
+            System.out.println("Erreur :" + e.getMessage());
+        }
+    }
+    
+    public void chargerPartie(String filePath){
+        // il suffit de lire chaque coup et de les jouer jusqu'à ce qu'on soit à jour.
+        // on commence par initialiser un plateau : 
+        
+        // Charger la partie depuis le fichier
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                // Chaque ligne est du format : joueur x1 y1 x2 y2
+                String[] parts = line.split(" ");
+                char joueur = parts[0].charAt(0);  // Le joueur (B ou N)
+                int x1 = Integer.parseInt(parts[1]);
+                int y1 = Integer.parseInt(parts[2]);
+                int x2 = Integer.parseInt(parts[3]);
+                int y2 = Integer.parseInt(parts[4]);
+                String coup = x1 + " " + y1 + " " + x2 + " " + y2;
+
+                // Appliquer le coup sur le plateau
+                jouerTour(joueur, coup);
+            }
+        } catch (IOException e) {
+            System.out.println("Erreur lors du chargement de la partie : " + e.getMessage());
+            return;
+        }
+        
+        // Puis la partie reprend selon la structure classique : 
+        System.out.println("La Partie peut reprendre, bonne chance à tous, que le meilleur gagne !");
+        System.out.println("Entrez votre coup de la façon suivante : 2 3 3 4 pour déplacer de [2,3] à [3,4]):");
+        System.out.println("NB les cases sont numérotées de 1 à 8");
+        plateau.afficherPlateau();
+
+        while (!jeuFini()) {
+            // Tour du joueur Blanc
+            System.out.println("C'est le tour des Blancs (B). Entrez votre coup : ");
+            String coupB = scanner.nextLine();
+            while (!validerCoup('B',coupB)){
+                System.out.println("Votre coup n'est pas valide, merci d'en fournir un nouveau : ");
+                coupB = scanner.nextLine();
+            };
+            // Le coup est valide, actualisation du plateau en fonction du coup
+            jouerTour('B',coupB);
+            // Sauvegarder coup :
+            sauvegarderCoup('B',coupB,this.saveFile);
+            // Affichage du plateau et fin du tour
+            plateau.afficherPlateau();
+            
+            // Tour du joueur Noir
+            System.out.println("C'est le tour des Noirs (N). Entrez votre coup : ");
+            String coupN = scanner.nextLine();
+            while (!validerCoup('N',coupN)){
+                System.out.println("Votre coup n'est pas valide, merci d'en fournir un nouveau : ");
+                coupN = scanner.nextLine();
+            };
+            // Le coup est valide, actualisation du plateau en fonction du coup
+            jouerTour('N',coupN); 
+            // Sauvegarder coup :
+            sauvegarderCoup('N',coupN,this.saveFile);
+            // Affichage du plateau et fin du tour
+            plateau.afficherPlateau();
+            
+        }
+
+        System.out.println("Fin de la partie !");
     }
 
 }
