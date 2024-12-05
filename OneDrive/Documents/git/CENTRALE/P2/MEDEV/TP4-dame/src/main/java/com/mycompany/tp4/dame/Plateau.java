@@ -10,6 +10,10 @@ package com.mycompany.tp4.dame;
  */
 public class Plateau {
     private char[][] pions = new char[8][8]; // Plateau de 8x8
+    
+    public Plateau(char[][] p){
+        this.pions = p;
+    }
 
     public Plateau() {
         // Placer les pièces de manière initiale

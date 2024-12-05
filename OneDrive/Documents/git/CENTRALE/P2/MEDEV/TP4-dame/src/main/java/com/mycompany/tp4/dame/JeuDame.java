@@ -21,6 +21,12 @@ class JeuDame {
     private Plateau plateau = new Plateau(); // Plateau de 8x8
     private Scanner scanner = new Scanner(System.in);
     private String saveFile = "save.txt";
+    
+    public JeuDame(){
+        plateau = new Plateau(); // Plateau de 8x8
+        scanner = new Scanner(System.in);
+        saveFile = "save.txt";
+    }
 
     public void demarrerPartie() {
         System.out.println("La Partie va commencer, bonne chance à tous, que le meilleur gagne !");
@@ -62,7 +68,7 @@ class JeuDame {
         System.out.println("Fin de la partie !");
     }
 
-    private void jouerTour(char joueur, String coup){
+    public void jouerTour(char joueur, String coup){
         String[] parts = coup.split(" ");
         int x1 = Integer.parseInt(parts[0]);
         int y1 = Integer.parseInt(parts[1]);
@@ -73,7 +79,7 @@ class JeuDame {
         pions[x2-1][y2-1] = joueur;
     }
 
-    private boolean validerCoup(char joueur, String coup) {
+    public boolean validerCoup(char joueur, String coup) {
         String e = "\\d+ \\d+ \\d+ \\d+";
         if (!coup.matches(e)){return false;} // le coup donné ne matche pas l'expression régulière d'un coup
         String[] parts = coup.split(" ");
@@ -206,6 +212,14 @@ class JeuDame {
         }
 
         System.out.println("Fin de la partie !");
+    }
+    
+    public Plateau getPlateau(){
+        return this.plateau;
+    }
+    
+    public void setPlateau(Plateau p){
+        this.plateau = p;
     }
 
 }
